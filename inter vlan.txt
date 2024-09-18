@@ -1,0 +1,196 @@
+
+Router on a stick - 
+
+sw0 y sw1
+
+enable
+configure terminal
+vlan 10
+name MINSAL
+vlan 20 
+name ANDA
+vlan 30
+name MedioAmbiente
+interface range fa0/1-5
+switchport mode access
+switchport access vlan 10
+interface range fa0/6-10
+switchport mode access
+switchport access vlan 20
+interface range fa0/11-20
+switchport mode access
+switchport access vlan 30
+interface range fa0/23-24
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30
+
+sw2
+
+
+enable
+configure terminal
+vlan 10
+name MINSAL
+vlan 20 
+name ANDA
+vlan 30
+name MedioAmbiente
+interface range fa0/1-5
+switchport mode access
+switchport access vlan 10
+interface range fa0/6-10
+switchport mode access
+switchport access vlan 20
+interface range fa0/11-20
+switchport mode access
+switchport access vlan 30
+interface range fa0/22-24
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30
+
+r1
+
+enable
+configure terminal
+interface g0/0
+no shutdown 
+interface g0/0.10
+encapsulation dot1q 10
+ip address 192.168.10.1 255.255.255.0
+interface g0/0.20 
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+interface g0/0.30
+encapsulation dot1q 30
+ip address 192.168.30.1 255.255.255.0
+
+
+---------------------------------------------
+
+SVI 
+
+SW0 y SW1
+
+enable
+configure terminal
+vlan 2 
+name HonorablesDiputados
+vlan 3
+name EstudioBioquimico
+vlan 4
+name LasPavas
+vlan 5
+name KilowattsAgua
+interface range fa0/1-5
+switchport mode access
+switchport access vlan 2
+interface range fa0/6-10
+switchport mode access
+switchport access vlan 3
+interface range fa0/11-15
+switchport mode access
+switchport access vlan 4
+interface range fa0/16-20
+switchport mode access
+switchport access vlan 5
+interface range fa0/23-24
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 2,3,4,5
+
+
+SW2
+
+enable
+configure terminal
+vlan 2 
+name HonorablesDiputados
+vlan 3
+name EstudioBioquimico
+vlan 4
+name LasPavas
+vlan 5
+name KilowattsAgua
+interface range fa0/1-5
+switchport mode access
+switchport access vlan 2
+interface range fa0/6-10
+switchport mode access
+switchport access vlan 3
+interface range fa0/11-15
+switchport mode access
+switchport access vlan 4
+interface range fa0/16-20
+switchport mode access
+switchport access vlan 5
+interface range fa0/23-24
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 2,3,4,5
+interface g0/1
+no switchport
+ip address 20.0.0.1 255.255.255.252
+exit
+interface vlan 2
+ip address 172.16.2.1 255.255.255.0
+exit
+interface vlan 3
+ip address 172.16.3.1 255.255.255.0
+exit
+interface vlan 4
+ip address 172.16.4.1 255.255.255.0
+exit
+interface vlan 5
+ip address 172.16.5.1 255.255.255.0
+ip routing
+router eigrp 150
+network 20.0.0.0
+network 172.16.2.0
+network 172.16.3.0
+network 172.16.4.0
+network 172.16.5.0
+
+r4
+
+enable
+configure terminal
+interface g0/0
+ip address 20.0.0.2 255.255.255.252
+no shutdown
+router eigrp 150
+network 20.0.0.0
+network 10.0.0.4
+
+---------------------------------------------
+
+Enrutamiento
+
+r2
+
+enable
+configure terminal
+interface serial0/0/0
+ip address 10.0.0.2 255.255.255.252
+no shutdown
+interface serial0/0/1
+ip address 10.0.0.5 255.255.255.252
+no shutdown
+router eigrp 150
+network 10.0.0.0
+network 10.0.0.4
+
+r4 serial
+
+enable
+configure terminal
+interface serial0/0/0
+ip address 10.0.0.6 255.255.255.252
+no shutdown
+
+r1 serial
+
+enable
+configure terminal
+interface serial0/0/0
+ip address 10.0.0.1 255.255.255.252
+no shutdown
